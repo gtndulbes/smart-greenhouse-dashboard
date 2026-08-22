@@ -77,3 +77,12 @@ body { transition: background 0.3s, color 0.3s; }
 
 /* ===== TOGGLE ===== */
 .peer:checked ~ .peer-checked\:bg-emerald-500 { background-color: #22c55e; }
+
+/* Animasi berkedip untuk badge saat ada alert baru */
+@keyframes pulse-badge {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+}
+.badge-pulse {
+    animation: pulse-badge 0.5s ease-in-out 2;
+}
