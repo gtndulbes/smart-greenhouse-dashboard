@@ -121,6 +121,19 @@ document.getElementById('notificationBell')?.addEventListener('click', () => {
     }, 1000);
 });
 
+// ============================================================
+// REGISTER SERVICE WORKER (PWA)
+// ============================================================
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js')
+        .then(registration => {
+            console.log('✅ Service Worker registered with scope:', registration.scope);
+        })
+        .catch(error => {
+            console.log('❌ Service Worker registration failed:', error);
+        });
+}
+
 // Expose socket event overrides from socket.js to app.js
 // We already handle them in socket.js
 console.log('🌱 Smart Greenhouse App Loaded (Multi-User)');
