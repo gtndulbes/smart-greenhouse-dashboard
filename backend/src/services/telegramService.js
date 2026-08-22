@@ -30,9 +30,15 @@ class TelegramService {
   }
 
   async sendAlert(level, message) {
-    const emoji = level === 'CRITICAL' ? '🚨' : level === 'WARNING' ? '⚠️' : 'ℹ️';
-    const text = `${emoji} <b>Smart Greenhouse Alert</b>\nLevel: ${level}\nMessage: ${message}\nTime: ${new Date().toISOString()}`;
-    return this.sendMessage(text);
+      if (level !== 'CRITICAL') {
+          console.log(`[Telegram] ⏭️ Skip non-critical alert: ${level}`);
+          return false;
+      }
+      
+      console.log(`[Telegram] 📤 Sending alert: ${message}`);
+      const emoji = '🚨';
+      const text = `${emoji} <b>Smart Greenhouse Alert</b>\nLevel: ${level}\nMessage: ${message}\nTime: ${new Date().toISOString()}`;
+      return this.sendMessage(text);
   }
 }
 
