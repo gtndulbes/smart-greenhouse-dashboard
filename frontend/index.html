@@ -6,6 +6,8 @@
     <title>Smart Greenhouse Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <!-- Jika tidak ada file .ico, arahkan ke PNG -->
+    <link rel="icon" type="image/png" href="/assets/icons/favicon.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
@@ -61,7 +63,7 @@
                 <!-- 🔔 NOTIFICATION BELL (BARU) -->
                 <!-- ========================================================== -->
                 <button id="notificationBell" class="relative p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition">
-                    <i class="fas fa-bell text-slate-600 dark:text-slate-300 text-lg"></i>
+                    <i class="fa-solid fa-bell text-slate-600 dark:text-slate-300 text-lg"></i>
                     <!-- Badge counter - muncul jika ada alert -->
                     <span id="notificationBadge" class="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full shadow-md hidden">
                         0

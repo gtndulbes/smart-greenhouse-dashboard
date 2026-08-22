@@ -42,6 +42,11 @@ app.get('/health', (req, res) => {
   });
 });
 
+// Redirect favicon.ico ke favicon.png
+app.get('/favicon.ico', (req, res) => {
+    res.redirect('/assets/icons/favicon.png');
+});
+
 // Error handler (harus di akhir)
 app.use(errorHandler);
 
