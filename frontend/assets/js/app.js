@@ -100,6 +100,27 @@ document.addEventListener('DOMContentLoaded', () => {
         .catch(console.warn);
 });
 
+// ============================================================
+// NOTIFICATION BELL - Navigasi ke Alerts
+// ============================================================
+document.getElementById('notificationBell')?.addEventListener('click', () => {
+    // Jika sudah di halaman Alerts, scroll ke atas
+    if (currentPage === 'alerts') {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        return;
+    }
+    
+    // Navigasi ke halaman Alerts
+    navigateTo('alerts');
+    
+    // Highlight bell dengan efek kecil (opsional)
+    const bell = document.getElementById('notificationBell');
+    bell.classList.add('ring-2', 'ring-blue-400', 'ring-offset-2');
+    setTimeout(() => {
+        bell.classList.remove('ring-2', 'ring-blue-400', 'ring-offset-2');
+    }, 1000);
+});
+
 // Expose socket event overrides from socket.js to app.js
 // We already handle them in socket.js
 console.log('🌱 Smart Greenhouse App Loaded (Multi-User)');
