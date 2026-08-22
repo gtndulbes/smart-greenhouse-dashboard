@@ -1,0 +1,15 @@
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script>
+async function exportPDF() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF('landscape');
+    doc.text('Smart Greenhouse Report', 20, 20);
+    doc.text(`Generated: ${new Date().toLocaleString()}`, 20, 30);
+    // Capture chart
+    const chartCanvas = document.getElementById('envChart');
+    const imgData = chartCanvas.toDataURL('image/png');
+    doc.addImage(imgData, 'PNG', 20, 40, 250, 100);
+    doc.save('greenhouse_report.pdf');
+}
+</script>

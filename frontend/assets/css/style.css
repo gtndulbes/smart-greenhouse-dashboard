@@ -1,0 +1,79 @@
+/* ===== GLOBAL ===== */
+* { font-family: 'Inter', sans-serif; }
+body { transition: background 0.3s, color 0.3s; }
+
+/* ===== CARDS ===== */
+.card {
+    background: white;
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+    border: 1px solid #f1f5f9;
+    transition: background 0.3s, border 0.3s;
+}
+.dark .card {
+    background: #1e293b;
+    border-color: #334155;
+}
+
+/* ===== STATS ===== */
+.stat-value { font-size: 2rem; font-weight: 700; line-height: 1.2; }
+.stat-label { font-size: 0.875rem; color: #64748b; }
+.dark .stat-label { color: #94a3b8; }
+
+/* ===== BADGES ===== */
+.badge-online { background: #dcfce7; color: #166534; }
+.badge-offline { background: #fee2e2; color: #991b1b; }
+.badge-auto { background: #dbeafe; color: #1e40af; }
+.badge-manual { background: #fef3c7; color: #92400e; }
+.dark .badge-online { background: #166534; color: #dcfce7; }
+.dark .badge-offline { background: #991b1b; color: #fee2e2; }
+.dark .badge-auto { background: #1e40af; color: #dbeafe; }
+.dark .badge-manual { background: #92400e; color: #fef3c7; }
+
+/* ===== SLIDER ===== */
+.slider-thumb::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    height: 20px;
+    width: 20px;
+    border-radius: 50%;
+    background: #2563eb;
+    cursor: pointer;
+}
+.dark .slider-thumb::-webkit-slider-thumb { background: #60a5fa; }
+.slider-thumb::-moz-range-thumb {
+    height: 20px;
+    width: 20px;
+    border-radius: 50%;
+    background: #2563eb;
+    cursor: pointer;
+    border: none;
+}
+
+/* ===== SCROLLBAR ===== */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 3px; }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+.dark ::-webkit-scrollbar-track { background: #1e293b; }
+.dark ::-webkit-scrollbar-thumb { background: #475569; }
+
+/* ===== CHART ===== */
+.chart-container { position: relative; height: 200px; width: 100%; }
+
+/* ===== NAVIGATION ===== */
+.nav-link.active-nav {
+    background: #f1f5f9;
+    color: #0f172a;
+}
+.dark .nav-link.active-nav {
+    background: #334155;
+    color: #f8fafc;
+}
+
+/* ===== MOBILE OVERLAY ===== */
+#sidebarOverlay.active {
+    display: block !important;
+}
+
+/* ===== TOGGLE ===== */
+.peer:checked ~ .peer-checked\:bg-emerald-500 { background-color: #22c55e; }

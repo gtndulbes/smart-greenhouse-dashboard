@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" />
+    <title>Smart Greenhouse Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <link rel="stylesheet" href="/assets/css/style.css" />
+</head>
+<body>
+
+<!-- ===== SIDEBAR ===== -->
+<aside id="sidebar" class="fixed top-0 left-0 h-full w-64 bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700 z-50 transition-transform duration-300 -translate-x-full lg:translate-x-0 overflow-y-auto">
+    <div class="p-4 border-b border-slate-200 dark:border-slate-700 flex items-center gap-3">
+        <div class="w-8 h-8 bg-emerald-600 rounded-lg flex items-center justify-center"><i class="fas fa-leaf text-white"></i></div>
+        <span class="font-bold text-lg">Smart GH</span>
+    </div>
+    <nav class="p-3 space-y-1">
+        <a href="#" data-page="dashboard" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition active-nav"><i class="fas fa-th-large w-5"></i> Dashboard</a>
+        <a href="#" data-page="monitoring" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition"><i class="fas fa-chart-line w-5"></i> Monitoring</a>
+        <a href="#" data-page="control" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition"><i class="fas fa-sliders-h w-5"></i> Control</a>
+        <a href="#" data-page="history" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition"><i class="fas fa-clock w-5"></i> History</a>
+        <a href="#" data-page="alerts" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition"><i class="fas fa-bell w-5"></i> Alerts</a>
+        <a href="#" data-page="settings" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition"><i class="fas fa-cog w-5"></i> Settings</a>
+    </nav>
+    <div class="absolute bottom-0 p-4 w-full border-t border-slate-200 dark:border-slate-700 text-xs text-slate-400">
+        <span id="sidebarClientCount">0 clients</span>
+    </div>
+</aside>
+
+<!-- ===== OVERLAY (Mobile) ===== -->
+<div id="sidebarOverlay" class="fixed inset-0 bg-black/50 z-40 hidden lg:hidden"></div>
+
+<!-- ===== MAIN CONTENT ===== -->
+<div class="lg:ml-64 min-h-screen">
+    <!-- Header -->
+    <header class="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 sticky top-0 z-30">
+        <div class="flex items-center justify-between px-4 sm:px-6 py-3">
+            <div class="flex items-center gap-3">
+                <button id="menuToggle" class="lg:hidden p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700"><i class="fas fa-bars text-xl"></i></button>
+                <h1 class="text-lg font-bold" id="pageTitle">Dashboard</h1>
+            </div>
+            <div class="flex items-center gap-3">
+                <span class="text-xs px-2 py-1 rounded-full font-medium" id="modeBadge">AUTO</span>
+                <span class="text-xs hidden md:inline text-slate-400" id="lastUpdateText">-</span>
+                <button id="darkModeToggle" class="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700"><i class="fas fa-moon dark:hidden text-slate-600"></i><i class="fas fa-sun hidden dark:inline text-yellow-400"></i></button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Pages Container -->
+    <div class="p-4 sm:p-6">
+        <!-- Page: Dashboard -->
+        <section id="page-dashboard" class="page-content">
+            <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-6" id="sensorCards">
+                <div class="card"><div class="flex justify-between"><span class="stat-label"><i class="fas fa-thermometer-half text-red-500 mr-1"></i>Temp</span><span class="text-xs px-2 py-0.5 rounded-full font-medium" id="tempStatus">Normal</span></div><div class="stat-value" id="tempValue">--°C</div><div class="stat-label" id="tempTimestamp">-</div></div>
+                <div class="card"><div class="flex justify-between"><span class="stat-label"><i class="fas fa-tint text-blue-500 mr-1"></i>Humidity</span><span class="text-xs px-2 py-0.5 rounded-full font-medium" id="humStatus">Normal</span></div><div class="stat-value" id="humValue">--%</div><div class="stat-label" id="humTimestamp">-</div></div>
+                <div class="card"><div class="flex justify-between"><span class="stat-label"><i class="fas fa-sun text-yellow-500 mr-1"></i>Light</span><span class="text-xs px-2 py-0.5 rounded-full font-medium" id="luxStatus">Normal</span></div><div class="stat-value" id="luxValue">-- lux</div><div class="stat-label" id="luxTimestamp">-</div></div>
+                <div class="card"><div class="flex justify-between"><span class="stat-label"><i class="fas fa-seedling text-emerald-500 mr-1"></i>Soil</span><span class="text-xs px-2 py-0.5 rounded-full font-medium" id="soilStatus">Normal</span></div><div class="stat-value" id="soilValue">--%</div><div class="stat-label" id="soilTimestamp">-</div></div>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-6">
+                <div class="lg:col-span-3 card"><div class="flex justify-between mb-3"><span class="font-semibold">Real-time Chart</span><span class="text-xs text-slate-400" id="chartUpdate">Waiting...</span></div><div class="chart-container"><canvas id="envChart"></canvas></div></div>
+                <div class="card"><div class="font-semibold mb-3">System Status</div><div id="quickStatus" class="space-y-2 text-sm"></div></div>
+            </div>
+            <div class="card"><div class="font-semibold mb-3">Recent Alerts</div><div id="alertContainer" class="max-h-32 overflow-y-auto"></div></div>
+        </section>
+
+        <!-- Page: Monitoring -->
+        <section id="page-monitoring" class="page-content hidden">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="card"><h3 class="font-semibold mb-2"><i class="fas fa-thermometer-half text-red-500 mr-2"></i>Temperature</h3><div class="chart-container"><canvas id="monitorTempChart"></canvas></div></div>
+                <div class="card"><h3 class="font-semibold mb-2"><i class="fas fa-tint text-blue-500 mr-2"></i>Humidity</h3><div class="chart-container"><canvas id="monitorHumChart"></canvas></div></div>
+                <div class="card"><h3 class="font-semibold mb-2"><i class="fas fa-sun text-yellow-500 mr-2"></i>Light</h3><div class="chart-container"><canvas id="monitorLuxChart"></canvas></div></div>
+                <div class="card"><h3 class="font-semibold mb-2"><i class="fas fa-seedling text-emerald-500 mr-2"></i>Soil Moisture</h3><div class="chart-container"><canvas id="monitorSoilChart"></canvas></div></div>
+            </div>
+        </section>
+
+        <!-- Page: Control -->
+        <section id="page-control" class="page-content hidden">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="card"><h3 class="font-semibold mb-4"><i class="fas fa-fan mr-2"></i>Fan</h3><div class="flex items-center gap-4"><span class="text-2xl font-bold" id="ctrlFanVal">0%</span><input type="range" min="0" max="100" value="0" id="ctrlFanSlider" class="flex-1 slider-thumb" /></div></div>
+                <div class="card"><h3 class="font-semibold mb-4"><i class="fas fa-lightbulb text-yellow-500 mr-2"></i>LED</h3><div class="flex items-center gap-4"><span class="text-2xl font-bold" id="ctrlLedVal">0%</span><input type="range" min="0" max="100" value="0" id="ctrlLedSlider" class="flex-1 slider-thumb" /></div></div>
+                <div class="card"><h3 class="font-semibold mb-4"><i class="fas fa-water text-blue-400 mr-2"></i>Misting</h3><div class="flex items-center gap-4"><span class="text-2xl font-bold" id="ctrlMistVal">0%</span><input type="range" min="0" max="100" value="0" id="ctrlMistSlider" class="flex-1 slider-thumb" /></div></div>
+                <div class="card"><h3 class="font-semibold mb-4"><i class="fas fa-pump text-emerald-500 mr-2"></i>Water Pump</h3><div class="flex items-center justify-between"><span class="text-2xl font-bold" id="ctrlPumpVal">OFF</span><label class="relative inline-flex items-center cursor-pointer"><input type="checkbox" id="ctrlPumpToggle" class="sr-only peer"><div class="w-11 h-6 bg-slate-300 rounded-full peer dark:bg-slate-600 peer-checked:bg-emerald-500 transition"></div></label></div></div>
+            </div>
+            <div class="mt-6 card text-center"><p class="text-sm text-slate-500 dark:text-slate-400">Mode saat ini: <strong id="ctrlModeDisplay">AUTO</strong> – <span id="ctrlModeHint">Kontrol otomatis aktif</span></p><button id="ctrlModeToggle" class="mt-2 px-6 py-2 rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 transition">Switch to MANUAL</button></div>
+        </section>
+
+        <!-- Page: History -->
+        <section id="page-history" class="page-content hidden">
+            <div class="card mb-4"><div class="flex flex-wrap gap-3 items-end"><div><label class="text-xs font-medium">From</label><input type="date" id="historyFrom" class="block w-full rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3 py-1.5 text-sm" /></div><div><label class="text-xs font-medium">To</label><input type="date" id="historyTo" class="block w-full rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3 py-1.5 text-sm" /></div><div><button id="historyLoadBtn" class="mt-1 px-4 py-1.5 bg-emerald-600 text-white rounded-lg text-sm hover:bg-emerald-700">Load</button></div><div><button id="historyExportBtn" class="mt-1 px-4 py-1.5 bg-indigo-600 text-white rounded-lg text-sm hover:bg-indigo-700"><i class="fas fa-file-pdf mr-1"></i>Export PDF</button></div></div></div>
+            <div class="card overflow-x-auto"><table class="w-full text-sm"><thead class="bg-slate-50 dark:bg-slate-700"><tr><th class="p-2 text-left">Time</th><th class="p-2 text-left">Temp</th><th class="p-2 text-left">Hum</th><th class="p-2 text-left">Lux</th><th class="p-2 text-left">Soil</th><th class="p-2 text-left">Fan</th><th class="p-2 text-left">LED</th><th class="p-2 text-left">Mist</th><th class="p-2 text-left">Pump</th></tr></thead><tbody id="historyTableBody"><tr><td colspan="9" class="text-center text-slate-400 py-4">No data loaded</td></tr></tbody></table></div>
+        </section>
+
+        <!-- Page: Alerts -->
+        <section id="page-alerts" class="page-content hidden">
+            <div class="card"><div class="flex justify-between mb-3"><span class="font-semibold">All Alerts</span><button id="clearAlertsBtn" class="text-xs text-red-500 hover:underline">Clear All</button></div><div id="allAlertsContainer" class="space-y-1 max-h-96 overflow-y-auto"></div></div>
+        </section>
+
+        <!-- Page: Settings -->
+        <section id="page-settings" class="page-content hidden">
+            <div class="card"><h3 class="font-semibold mb-3">System Configuration</h3><div class="space-y-2 text-sm"><div class="flex justify-between border-b border-slate-100 dark:border-slate-700 py-2"><span class="text-slate-500">Mode</span><span id="setMode">AUTO</span></div><div class="flex justify-between border-b border-slate-100 dark:border-slate-700 py-2"><span class="text-slate-500">MQTT Broker</span><span id="setBroker">-</span></div><div class="flex justify-between border-b border-slate-100 dark:border-slate-700 py-2"><span class="text-slate-500">ESP32 Client</span><span id="setClient">-</span></div><div class="flex justify-between border-b border-slate-100 dark:border-slate-700 py-2"><span class="text-slate-500">Last Update</span><span id="setLastUpdate">-</span></div><div class="flex justify-between border-b border-slate-100 dark:border-slate-700 py-2"><span class="text-slate-500">Connected Clients</span><span id="setClients">0</span></div></div><div class="mt-4 text-xs text-slate-400">* Setpoint tidak tersedia via MQTT (hanya di config.h firmware)</div></div>
+        </section>
+    </div>
+</div>
+
+<!-- ===== JAVASCRIPT MODULES ===== -->
+<script src="/assets/js/state.js"></script>
+<script src="/assets/js/socket.js"></script>
+<script src="/assets/js/dashboard.js"></script>
+<script src="/assets/js/monitoring.js"></script>
+<script src="/assets/js/control.js"></script>
+<script src="/assets/js/history.js"></script>
+<script src="/assets/js/alerts.js"></script>
+<script src="/assets/js/settings.js"></script>
+<script src="/assets/js/app.js"></script>
+</body>
+</html>
