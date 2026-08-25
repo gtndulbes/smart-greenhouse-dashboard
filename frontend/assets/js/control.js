@@ -22,18 +22,25 @@ async function sendControl(actuator, value) {
 }
 
 function updateControlUI(data) {
+    // Fan
     if (data.fan !== undefined) {
         DOM.ctrlFanVal.textContent = data.fan + '%';
         DOM.ctrlFanSlider.value = data.fan;
     }
+    // LED
     if (data.led !== undefined) {
         DOM.ctrlLedVal.textContent = data.led + '%';
         DOM.ctrlLedSlider.value = data.led;
     }
+    // Misting - Toggle ON/OFF, tampilkan persen
     if (data.misting !== undefined) {
-        DOM.ctrlMistVal.textContent = data.misting + '%';
-        DOM.ctrlMistSlider.value = data.misting;
+        const val = data.misting;
+        const on = val > 0;
+        DOM.ctrlMistStatus.textContent = val + '%';        // Tampilkan persen
+        DOM.ctrlMistToggle.checked = on;                  // Toggle sesuai ON/OFF
+        DOM.ctrlMistLabel.textContent = on ? 'ON' : 'OFF'; // Label
     }
+    // Water Pump
     if (data.water_pump !== undefined) {
         const on = data.water_pump === 1 || data.water_pump === true;
         DOM.ctrlPumpVal.textContent = on ? 'ON' : 'OFF';
@@ -52,35 +59,63 @@ function updateControlModeUI(sys) {
     DOM.ctrlModeToggle.className = `mt-2 px-6 py-2 rounded-lg text-white transition ${mode === 'AUTO' ? 'bg-amber-600 hover:bg-amber-700' : 'bg-emerald-600 hover:bg-emerald-700'}`;
 }
 
-// --- Event Listeners ---
+// ============================================================
+// EVENT LISTENERS
+// ============================================================
+
+// --- Fan Slider ---
 DOM.ctrlFanSlider?.addEventListener('input', (e) => {
     const val = parseInt(e.target.value);
     DOM.ctrlFanVal.textContent = val + '%';
     if (AppState.system.mode === 'MANUAL') sendControl('fan', val);
-    else { DOM.ctrlFanSlider.value = AppState.actuator.fan || 0; DOM.ctrlFanVal.textContent = (AppState.actuator.fan || 0) + '%'; }
+    else {
+        DOM.ctrlFanSlider.value = AppState.actuator.fan || 0;
+        DOM.ctrlFanVal.textContent = (AppState.actuator.fan || 0) + '%';
+    }
 });
 
+// --- LED Slider ---
 DOM.ctrlLedSlider?.addEventListener('input', (e) => {
     const val = parseInt(e.target.value);
     DOM.ctrlLedVal.textContent = val + '%';
     if (AppState.system.mode === 'MANUAL') sendControl('led', val);
-    else { DOM.ctrlLedSlider.value = AppState.actuator.led || 0; DOM.ctrlLedVal.textContent = (AppState.actuator.led || 0) + '%'; }
+    else {
+        DOM.ctrlLedSlider.value = AppState.actuator.led || 0;
+        DOM.ctrlLedVal.textContent = (AppState.actuator.led || 0) + '%';
+    }
 });
 
-DOM.ctrlMistSlider?.addEventListener('input', (e) => {
-    const val = parseInt(e.target.value);
-    DOM.ctrlMistVal.textContent = val + '%';
-    if (AppState.system.mode === 'MANUAL') sendControl('misting', val);
-    else { DOM.ctrlMistSlider.value = AppState.actuator.misting || 0; DOM.ctrlMistVal.textContent = (AppState.actuator.misting || 0) + '%'; }
+// --- Misting Toggle (ON/OFF) ---
+DOM.ctrlMistToggle?.addEventListener('change', (e) => {
+    const on = e.target.checked;
+    const val = on ? 100 : 0;
+    DOM.ctrlMistStatus.textContent = val + '%';
+    DOM.ctrlMistLabel.textContent = on ? 'ON' : 'OFF';
+    if (AppState.system.mode === 'MANUAL') {
+        sendControl('misting', val);
+    } else {
+        // Di AUTO, toggle tidak aktif (kontrol otomatis berjalan)
+        // Kembalikan ke state dari ESP32
+        DOM.ctrlMistToggle.checked = AppState.actuator.misting > 0;
+        DOM.ctrlMistStatus.textContent = (AppState.actuator.misting || 0) + '%';
+        DOM.ctrlMistLabel.textContent = AppState.actuator.misting > 0 ? 'ON' : 'OFF';
+        alert('Mode AUTO aktif, kontrol manual tidak tersedia.');
+    }
 });
 
+// --- Pump Toggle (ON/OFF) ---
 DOM.ctrlPumpToggle?.addEventListener('change', (e) => {
     const on = e.target.checked;
     DOM.ctrlPumpVal.textContent = on ? 'ON' : 'OFF';
     if (AppState.system.mode === 'MANUAL') sendControl('pump', on ? 1 : 0);
-    else { DOM.ctrlPumpToggle.checked = AppState.actuator.water_pump === 1; DOM.ctrlPumpVal.textContent = AppState.actuator.water_pump ? 'ON' : 'OFF'; }
+    else {
+        DOM.ctrlPumpToggle.checked = AppState.actuator.water_pump === 1;
+        DOM.ctrlPumpVal.textContent = AppState.actuator.water_pump ? 'ON' : 'OFF';
+        alert('Mode AUTO aktif, kontrol manual tidak tersedia.');
+    }
 });
 
+// --- Mode Toggle ---
 DOM.ctrlModeToggle?.addEventListener('click', async () => {
     const current = AppState.system.mode || 'AUTO';
     const target = current === 'AUTO' ? 'MANUAL' : 'AUTO';
