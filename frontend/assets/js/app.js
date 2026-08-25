@@ -1,7 +1,10 @@
 // ============================================================
-// APP ROUTER & GLOBAL INIT
+// APP ROUTER, GLOBAL INIT, DARK MODE, NOTIFICATIONS, PWA
 // ============================================================
 
+// ============================================================
+// PAGES CONFIG
+// ============================================================
 const pages = ['dashboard', 'monitoring', 'control', 'history', 'alerts', 'settings'];
 const pageTitles = {
     dashboard: 'Dashboard',
@@ -14,126 +17,208 @@ const pageTitles = {
 
 let currentPage = 'dashboard';
 
+// ============================================================
+// ROUTER: NAVIGATE TO PAGE
+// ============================================================
 function navigateTo(page) {
     if (!pages.includes(page)) return;
     currentPage = page;
-    
+
     // Hide all pages
     document.querySelectorAll('.page-content').forEach(el => el.classList.add('hidden'));
+
+    // Show target page
     const target = document.getElementById(`page-${page}`);
     if (target) target.classList.remove('hidden');
-    
+
     // Update nav links
     document.querySelectorAll('.nav-link').forEach(el => {
         el.classList.toggle('active-nav', el.dataset.page === page);
     });
-    
-    // Update title
+
+    // Update page title
     if (DOM.pageTitle) DOM.pageTitle.textContent = pageTitles[page] || page;
-    
+
     // Close sidebar on mobile
     closeSidebar();
 }
 
+// ============================================================
+// SIDEBAR
+// ============================================================
 function toggleSidebar() {
     const sidebar = document.getElementById('sidebar');
     const overlay = DOM.sidebarOverlay;
+    if (!sidebar) return;
     sidebar.classList.toggle('-translate-x-full');
-    overlay.classList.toggle('active');
+    if (overlay) overlay.classList.toggle('active');
 }
 
 function closeSidebar() {
     const sidebar = document.getElementById('sidebar');
     const overlay = DOM.sidebarOverlay;
+    if (!sidebar) return;
     if (!sidebar.classList.contains('-translate-x-full')) {
         sidebar.classList.add('-translate-x-full');
-        overlay.classList.remove('active');
+        if (overlay) overlay.classList.remove('active');
     }
 }
 
-// --- Dark Mode ---
+// ============================================================
+// DARK MODE (FULLY FIXED)
+// ============================================================
 let darkMode = localStorage.getItem('darkMode') === 'true';
+
 function applyDarkMode() {
-    document.documentElement.classList.toggle('dark', darkMode);
+    const html = document.documentElement;
+    if (darkMode) {
+        html.classList.add('dark');
+    } else {
+        html.classList.remove('dark');
+    }
     localStorage.setItem('darkMode', darkMode);
-    // Update chart colors if chart exists
-    if (typeof updateChartColors === 'function') updateChartColors();
+
+    // Update chart colors jika ada
+    if (typeof updateChartColors === 'function') {
+        updateChartColors();
+    }
+
+    // Update icon secara visual (fallback jika Tailwind tidak jalan)
+    updateDarkModeIcon();
 }
+
+// Fallback: langsung ubah icon jika Tailwind dark: variant tidak bekerja
+function updateDarkModeIcon() {
+    const toggleBtn = document.getElementById('darkModeToggle');
+    if (!toggleBtn) return;
+    const moonIcon = toggleBtn.querySelector('.fa-moon');
+    const sunIcon = toggleBtn.querySelector('.fa-sun');
+    if (!moonIcon || !sunIcon) return;
+
+    if (darkMode) {
+        moonIcon.style.display = 'none';
+        sunIcon.style.display = 'inline-block';
+    } else {
+        moonIcon.style.display = 'inline-block';
+        sunIcon.style.display = 'none';
+    }
+}
+
+// Apply dark mode awal
 applyDarkMode();
 
-// --- Event Listeners ---
+// ============================================================
+// DOM READY
+// ============================================================
 document.addEventListener('DOMContentLoaded', () => {
-    // Nav links
+
+    // ============================================================
+    // NAVIGATION LINKS
+    // ============================================================
     document.querySelectorAll('.nav-link').forEach(el => {
         el.addEventListener('click', (e) => {
             e.preventDefault();
             navigateTo(el.dataset.page);
         });
     });
-    
-    // Menu toggle
+
+    // ============================================================
+    // SIDEBAR EVENTS
+    // ============================================================
     DOM.menuToggle?.addEventListener('click', toggleSidebar);
     DOM.sidebarOverlay?.addEventListener('click', closeSidebar);
-    
-    // Dark mode toggle
-    DOM.darkModeToggle?.addEventListener('click', () => {
-        darkMode = !darkMode;
-        applyDarkMode();
-    });
-    
-    // Default page
+
+    // ============================================================
+    // DARK MODE TOGGLE (DENGAN IKON BERUBAH)
+    // ============================================================
+    const darkToggle = document.getElementById('darkModeToggle');
+    if (darkToggle) {
+        darkToggle.addEventListener('click', () => {
+            darkMode = !darkMode;
+            applyDarkMode();
+        });
+    }
+
+    // ============================================================
+    // NOTIFICATION BELL → Navigasi ke Alerts
+    // ============================================================
+    const bell = document.getElementById('notificationBell');
+    if (bell) {
+        bell.addEventListener('click', () => {
+            if (currentPage === 'alerts') {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                return;
+            }
+            navigateTo('alerts');
+
+            // Efek highlight ring
+            bell.classList.add('ring-2', 'ring-blue-400', 'ring-offset-2');
+            setTimeout(() => {
+                bell.classList.remove('ring-2', 'ring-blue-400', 'ring-offset-2');
+            }, 1000);
+        });
+    }
+
+    // ============================================================
+    // DEFAULT PAGE
+    // ============================================================
     navigateTo('dashboard');
-    
-    // Fetch initial system status
+
+    // ============================================================
+    // FETCH INITIAL SYSTEM STATUS
+    // ============================================================
     fetch('/api/system/status')
         .then(r => r.json())
         .then(data => {
-            if (data.system) updateSystemUI(data.system);
-            if (data.mqtt) AppState.mqttConnected = data.mqtt.connected;
+            if (data.system && typeof updateSystemUI === 'function') {
+                updateSystemUI(data.system);
+            }
+            if (data.mqtt) {
+                AppState.mqttConnected = data.mqtt.connected;
+            }
             if (data.clients) {
                 AppState.clients = data.clients.connected || 0;
-                if (DOM.sidebarClientCount) DOM.sidebarClientCount.textContent = `${AppState.clients} clients`;
+                if (DOM.sidebarClientCount) {
+                    DOM.sidebarClientCount.textContent = `${AppState.clients} clients`;
+                }
             }
-            updateConnectionUI();
-            updateSettingsUI();
+            if (typeof updateConnectionUI === 'function') {
+                updateConnectionUI();
+            }
+            if (typeof updateSettingsUI === 'function') {
+                updateSettingsUI();
+            }
         })
-        .catch(console.warn);
-});
+        .catch(err => console.warn('⚠️ Failed to fetch system status:', err));
 
-// ============================================================
-// NOTIFICATION BELL - Navigasi ke Alerts
-// ============================================================
-document.getElementById('notificationBell')?.addEventListener('click', () => {
-    // Jika sudah di halaman Alerts, scroll ke atas
-    if (currentPage === 'alerts') {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-        return;
+    // ============================================================
+    // REGISTER SERVICE WORKER (PWA)
+    // ============================================================
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/sw.js')
+            .then(registration => {
+                console.log('✅ Service Worker registered with scope:', registration.scope);
+            })
+            .catch(error => {
+                console.warn('❌ Service Worker registration failed:', error);
+            });
     }
-    
-    // Navigasi ke halaman Alerts
-    navigateTo('alerts');
-    
-    // Highlight bell dengan efek kecil (opsional)
-    const bell = document.getElementById('notificationBell');
-    bell.classList.add('ring-2', 'ring-blue-400', 'ring-offset-2');
+
+    // ============================================================
+    // UPDATE DARK MODE ICON SETELAH DOM LOAD (JAGA-JAGA)
+    // ============================================================
     setTimeout(() => {
-        bell.classList.remove('ring-2', 'ring-blue-400', 'ring-offset-2');
-    }, 1000);
+        updateDarkModeIcon();
+    }, 100);
+
+    console.log('🌱 Smart Greenhouse App Loaded (Multi-User Ready)');
 });
 
 // ============================================================
-// REGISTER SERVICE WORKER (PWA)
+// EXPOSE FUNCTION GLOBAL (untuk dipanggil dari file lain)
 // ============================================================
-if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/sw.js')
-        .then(registration => {
-            console.log('✅ Service Worker registered with scope:', registration.scope);
-        })
-        .catch(error => {
-            console.log('❌ Service Worker registration failed:', error);
-        });
-}
-
-// Expose socket event overrides from socket.js to app.js
-// We already handle them in socket.js
-console.log('🌱 Smart Greenhouse App Loaded (Multi-User)');
+window.navigateTo = navigateTo;
+window.closeSidebar = closeSidebar;
+window.toggleSidebar = toggleSidebar;
+window.applyDarkMode = applyDarkMode;
+window.updateDarkModeIcon = updateDarkModeIcon;

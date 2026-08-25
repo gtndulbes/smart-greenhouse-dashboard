@@ -1,88 +1,279 @@
-/* ===== GLOBAL ===== */
-* { font-family: 'Inter', sans-serif; }
-body { transition: background 0.3s, color 0.3s; }
+/* ============================================================
+   SMART GREENHOUSE DASHBOARD - STYLE FINAL (SEMUA PERBAIKAN)
+   ============================================================ */
 
-/* ===== CARDS ===== */
+/* ============================================================
+   GLOBAL
+   ============================================================ */
+* {
+    font-family: 'Inter', sans-serif;
+}
+body {
+    transition: background 0.3s, color 0.3s;
+}
+
+/* ============================================================
+   CARDS
+   ============================================================ */
 .card {
-    background: white;
-    border-radius: 16px;
-    padding: 20px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 20px 24px;
     border: 1px solid #f1f5f9;
-    transition: background 0.3s, border 0.3s;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.03);
+    transition: all 0.25s ease;
+}
+.card:hover {
+    border-color: #e2e8f0;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    transform: translateY(-2px);
 }
 .dark .card {
     background: #1e293b;
     border-color: #334155;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+.dark .card:hover {
+    border-color: #475569;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.5);
 }
 
-/* ===== STATS ===== */
-.stat-value { font-size: 2rem; font-weight: 700; line-height: 1.2; }
-.stat-label { font-size: 0.875rem; color: #64748b; }
-.dark .stat-label { color: #94a3b8; }
+/* ============================================================
+   STATS
+   ============================================================ */
+.stat-value {
+    font-size: 2rem;
+    font-weight: 800;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    color: #0f172a;
+}
+.dark .stat-value {
+    color: #f8fafc;
+}
 
-/* ===== BADGES ===== */
+.stat-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #475569;
+}
+.dark .stat-label {
+    color: #94a3b8;
+}
+
+/* ============================================================
+   BADGES
+   ============================================================ */
+.badge {
+    padding: 4px 14px;
+    border-radius: 9999px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
 .badge-online { background: #dcfce7; color: #166534; }
 .badge-offline { background: #fee2e2; color: #991b1b; }
 .badge-auto { background: #dbeafe; color: #1e40af; }
 .badge-manual { background: #fef3c7; color: #92400e; }
+.badge-normal { background: #dcfce7; color: #166534; }
+.badge-warning { background: #fef3c7; color: #92400e; }
+.badge-critical { background: #fee2e2; color: #991b1b; }
+.badge-on { background: #dcfce7; color: #166534; }
+.badge-off { background: #fee2e2; color: #991b1b; }
+
 .dark .badge-online { background: #166534; color: #dcfce7; }
 .dark .badge-offline { background: #991b1b; color: #fee2e2; }
 .dark .badge-auto { background: #1e40af; color: #dbeafe; }
 .dark .badge-manual { background: #92400e; color: #fef3c7; }
+.dark .badge-normal { background: #166534; color: #dcfce7; }
+.dark .badge-warning { background: #92400e; color: #fef3c7; }
+.dark .badge-critical { background: #991b1b; color: #fee2e2; }
+.dark .badge-on { background: #166534; color: #dcfce7; }
+.dark .badge-off { background: #991b1b; color: #fee2e2; }
 
-/* ===== SLIDER ===== */
+/* ============================================================
+   SLIDER
+   ============================================================ */
 .slider-thumb::-webkit-slider-thumb {
     -webkit-appearance: none;
-    height: 20px;
-    width: 20px;
+    height: 22px;
+    width: 22px;
     border-radius: 50%;
     background: #2563eb;
     cursor: pointer;
+    box-shadow: 0 2px 8px rgba(37,99,235,0.3);
+    transition: all 0.15s;
 }
-.dark .slider-thumb::-webkit-slider-thumb { background: #60a5fa; }
+.slider-thumb::-webkit-slider-thumb:hover { transform: scale(1.1); }
+.dark .slider-thumb::-webkit-slider-thumb {
+    background: #60a5fa;
+    box-shadow: 0 2px 8px rgba(96,165,250,0.3);
+}
 .slider-thumb::-moz-range-thumb {
-    height: 20px;
-    width: 20px;
+    height: 22px;
+    width: 22px;
     border-radius: 50%;
     background: #2563eb;
     cursor: pointer;
     border: none;
 }
 
-/* ===== SCROLLBAR ===== */
+/* ============================================================
+   SCROLLBAR
+   ============================================================ */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 3px; }
-::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 4px; }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
 .dark ::-webkit-scrollbar-track { background: #1e293b; }
 .dark ::-webkit-scrollbar-thumb { background: #475569; }
 
-/* ===== CHART ===== */
-.chart-container { position: relative; height: 200px; width: 100%; }
+/* ============================================================
+   CHART
+   ============================================================ */
+.chart-container { position: relative; height: 220px; width: 100%; }
 
-/* ===== NAVIGATION ===== */
+/* ============================================================
+   NAVIGATION
+   ============================================================ */
+.nav-link {
+    transition: all 0.2s;
+    color: #64748b;
+}
+.nav-link:hover {
+    background: #f1f5f9;
+    color: #0f172a;
+}
 .nav-link.active-nav {
     background: #f1f5f9;
     color: #0f172a;
+    font-weight: 600;
+}
+.dark .nav-link {
+    color: #94a3b8;
+}
+.dark .nav-link:hover {
+    background: #334155;
+    color: #f8fafc;
 }
 .dark .nav-link.active-nav {
     background: #334155;
     color: #f8fafc;
 }
 
-/* ===== MOBILE OVERLAY ===== */
-#sidebarOverlay.active {
-    display: block !important;
-}
+/* ============================================================
+   MOBILE OVERLAY
+   ============================================================ */
+#sidebarOverlay.active { display: block !important; }
 
-/* ===== TOGGLE ===== */
+/* ============================================================
+   TOGGLE
+   ============================================================ */
 .peer:checked ~ .peer-checked\:bg-emerald-500 { background-color: #22c55e; }
+.peer:checked ~ .peer-checked\:bg-blue-500 { background-color: #3b82f6; }
 
-/* Animasi berkedip untuk badge saat ada alert baru */
+/* ============================================================
+   ANIMASI BADGE
+   ============================================================ */
 @keyframes pulse-badge {
     0%, 100% { transform: scale(1); }
     50% { transform: scale(1.2); }
 }
-.badge-pulse {
-    animation: pulse-badge 0.5s ease-in-out 2;
+.badge-pulse { animation: pulse-badge 0.5s ease-in-out 2; }
+
+/* ============================================================
+   HEADER
+   ============================================================ */
+.header-glow {
+    box-shadow: 0 1px 0 rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.02);
+}
+.dark .header-glow {
+    box-shadow: 0 1px 0 rgba(255,255,255,0.04), 0 4px 12px rgba(0,0,0,0.2);
+}
+
+/* ============================================================
+   IKON DARK MODE (KUNING)
+   ============================================================ */
+#darkModeToggle .fa-moon,
+#darkModeToggle .fa-sun {
+    color: #eab308 !important;
+    font-size: 1.25rem;
+}
+#darkModeToggle i { transition: all 0.2s ease; }
+
+/* ============================================================
+   PERBAIKAN KONTRAST MODE TERANG - SEMUA HALAMAN
+   ============================================================ */
+
+/* --- Dashboard --- */
+html:not(.dark) #quickStatus { color: #1e293b; }
+html:not(.dark) #quickStatus span:first-child { color: #475569; }
+html:not(.dark) #chartUpdate { color: #64748b !important; }
+html:not(.dark) #lastUpdateText { color: #64748b !important; }
+html:not(.dark) #sidebarClientCount { color: #94a3b8 !important; }
+
+/* --- Real-time Environmental & System Status --- */
+html:not(.dark) .card .font-semibold,
+html:not(.dark) .card .font-semibold.text-sm {
+    color: #0f172a !important;
+}
+html:not(.dark) .card .font-semibold i.fa-server + span {
+    color: #0f172a !important;
+}
+html:not(.dark) .chart-container {
+    color: #1e293b !important;
+}
+
+/* --- Control --- */
+html:not(.dark) #ctrlFanVal,
+html:not(.dark) #ctrlLedVal,
+html:not(.dark) #ctrlMistVal,
+html:not(.dark) #ctrlPumpVal { color: #0f172a !important; }
+html:not(.dark) #ctrlMistPercent,
+html:not(.dark) #ctrlPumpStatus { color: #475569 !important; }
+html:not(.dark) #page-control .card h3 { color: #0f172a !important; }
+html:not(.dark) #page-control .text-xs.text-slate-400 { color: #64748b !important; }
+html:not(.dark) #ctrlModeDisplay { color: #0f172a !important; }
+html:not(.dark) #ctrlModeHint { color: #475569 !important; }
+
+/* --- Monitoring --- */
+html:not(.dark) #page-monitoring .card h3 { color: #0f172a !important; }
+
+/* --- History (termasuk header tabel) --- */
+html:not(.dark) #historyTableBody thead tr th {
+    color: #0f172a !important;
+    background-color: #f1f5f9 !important;
+    font-weight: 700 !important;
+    border-bottom: 2px solid #e2e8f0 !important;
+}
+html:not(.dark) #historyTableBody td { color: #1e293b !important; }
+html:not(.dark) #historyTableBody .text-slate-400 { color: #94a3b8 !important; }
+html:not(.dark) #historyTableBody .border-b { border-color: #e2e8f0 !important; }
+html:not(.dark) #historyTableBody .bg-slate-50 { background-color: #f8fafc !important; }
+html:not(.dark) label.text-xs.font-medium { color: #475569 !important; }
+
+/* --- Alerts --- */
+html:not(.dark) #page-alerts .font-semibold { color: #0f172a !important; }
+html:not(.dark) #page-alerts .text-xs.text-red-500 { color: #dc2626 !important; }
+html:not(.dark) #allAlertsContainer .text-slate-400 { color: #94a3b8 !important; }
+html:not(.dark) #allAlertsContainer .text-red-600 { color: #dc2626 !important; }
+html:not(.dark) #allAlertsContainer .text-amber-600 { color: #d97706 !important; }
+html:not(.dark) #allAlertsContainer .text-slate-600 { color: #475569 !important; }
+
+/* --- Settings --- */
+html:not(.dark) #page-settings .text-slate-500 { color: #475569 !important; }
+html:not(.dark) #page-settings .font-medium { color: #0f172a !important; }
+html:not(.dark) #page-settings .border-b { border-color: #e2e8f0 !important; }
+html:not(.dark) #page-settings .bg-slate-50 {
+    background-color: #f8fafc !important;
+    color: #1e293b !important;
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 640px) {
+    .card { padding: 16px; }
+    .stat-value { font-size: 1.5rem; }
 }
