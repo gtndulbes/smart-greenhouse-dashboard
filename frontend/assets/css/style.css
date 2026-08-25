@@ -1,5 +1,5 @@
 /* ============================================================
-   SMART GREENHOUSE DASHBOARD - STYLE FINAL (SEMUA PERBAIKAN)
+   SMART GREENHOUSE DASHBOARD - STYLE FINAL (VERSI 3.0)
    ============================================================ */
 
 /* ============================================================
@@ -223,6 +223,17 @@ html:not(.dark) .card .font-semibold i.fa-server + span {
 }
 html:not(.dark) .chart-container {
     color: #1e293b !important;
+}
+
+/* --- LEGENDA CHART: Temp, Humidity, Lux/100, Soil --- */
+html:not(.dark) .card .text-xs.font-medium {
+    color: #1e293b !important;
+}
+html:not(.dark) .card .text-xs.font-medium span {
+    color: inherit !important;
+}
+html:not(.dark) .card .text-xs.font-medium .inline-block {
+    color: inherit !important;
 }
 
 /* --- Control --- */
