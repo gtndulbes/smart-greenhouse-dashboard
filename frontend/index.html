@@ -123,8 +123,21 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="card"><h3 class="font-semibold mb-4"><i class="fas fa-fan mr-2"></i>Fan</h3><div class="flex items-center gap-4"><span class="text-2xl font-bold" id="ctrlFanVal">0%</span><input type="range" min="0" max="100" value="0" id="ctrlFanSlider" class="flex-1 slider-thumb" /></div></div>
                 <div class="card"><h3 class="font-semibold mb-4"><i class="fas fa-lightbulb text-yellow-500 mr-2"></i>LED</h3><div class="flex items-center gap-4"><span class="text-2xl font-bold" id="ctrlLedVal">0%</span><input type="range" min="0" max="100" value="0" id="ctrlLedSlider" class="flex-1 slider-thumb" /></div></div>
-                <div class="card"><h3 class="font-semibold mb-4"><i class="fas fa-water text-blue-400 mr-2"></i>Misting</h3><div class="flex items-center gap-4"><span class="text-2xl font-bold" id="ctrlMistVal">0%</span><input type="range" min="0" max="100" value="0" id="ctrlMistSlider" class="flex-1 slider-thumb" /></div></div>
-                <div class="card"><h3 class="font-semibold mb-4"><i class="fas fa-pump text-emerald-500 mr-2"></i>Water Pump</h3><div class="flex items-center justify-between"><span class="text-2xl font-bold" id="ctrlPumpVal">OFF</span><label class="relative inline-flex items-center cursor-pointer"><input type="checkbox" id="ctrlPumpToggle" class="sr-only peer"><div class="w-11 h-6 bg-slate-300 rounded-full peer dark:bg-slate-600 peer-checked:bg-emerald-500 transition"></div></label></div></div>
+                <!-- Misting Control -->
+                <div class="card">
+                    <h3 class="font-semibold mb-4"><i class="fas fa-water text-blue-400 mr-2"></i>Misting</h3>
+                    <div class="flex items-center justify-between">
+                        <span class="text-2xl font-bold" id="ctrlMistStatus">0%</span>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="ctrlMistToggle" class="sr-only peer">
+                            <div class="w-11 h-6 bg-slate-300 rounded-full peer dark:bg-slate-600 peer-checked:bg-blue-500 transition"></div>
+                            <span class="ml-2 text-sm font-medium" id="ctrlMistLabel">OFF</span>
+                        </label>
+                    </div>
+                    <!-- Tampilkan nilai persen (dari MQTT) -->
+                    <div class="text-xs text-slate-400 mt-2" id="ctrlMistPercent">Current: 0%</div>
+                </div>
+            <div class="card"><h3 class="font-semibold mb-4"><i class="fas fa-pump text-emerald-500 mr-2"></i>Water Pump</h3><div class="flex items-center justify-between"><span class="text-2xl font-bold" id="ctrlPumpVal">OFF</span><label class="relative inline-flex items-center cursor-pointer"><input type="checkbox" id="ctrlPumpToggle" class="sr-only peer"><div class="w-11 h-6 bg-slate-300 rounded-full peer dark:bg-slate-600 peer-checked:bg-emerald-500 transition"></div></label></div></div>
             </div>
             <div class="mt-6 card text-center"><p class="text-sm text-slate-500 dark:text-slate-400">Mode saat ini: <strong id="ctrlModeDisplay">AUTO</strong> – <span id="ctrlModeHint">Kontrol otomatis aktif</span></p><button id="ctrlModeToggle" class="mt-2 px-6 py-2 rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 transition">Switch to MANUAL</button></div>
         </section>
