@@ -288,3 +288,18 @@ html:not(.dark) #page-settings .bg-slate-50 {
     .card { padding: 16px; }
     .stat-value { font-size: 1.5rem; }
 }
+
+/* ============================================================
+   BADGE STATUS - TEKS PUTIH DI MODE TERANG
+   ============================================================ */
+html:not(.dark) .badge-normal,
+html:not(.dark) .badge-warning,
+html:not(.dark) .badge-critical,
+html:not(.dark) .badge-on,
+html:not(.dark) .badge-off,
+html:not(.dark) .badge-online,
+html:not(.dark) .badge-offline,
+html:not(.dark) .badge-auto,
+html:not(.dark) .badge-manual {
+    color: #ffffff !important;
+}

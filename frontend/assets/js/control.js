@@ -126,26 +126,28 @@ DOM.ctrlLedSlider?.addEventListener('input', (e) => {
 });
 
 // ============================================================
-// 3. MISTING TOGGLE
+// MISTING TOGGLE (dengan debug)
 // ============================================================
 DOM.ctrlMistToggle?.addEventListener('change', (e) => {
     const on = e.target.checked;
     const value = on ? 100 : 0;
 
-    // Optimistic update: UI langsung berubah
+    console.log(`[Misting] Toggle changed: ${on}, value: ${value}, mode: ${AppState.system.mode}`);
+
+    // Optimistic update
     DOM.ctrlMistVal.textContent = on ? 'ON' : 'OFF';
     if (DOM.ctrlMistPercent) DOM.ctrlMistPercent.textContent = value + '%';
 
     if (AppState.system.mode === 'MANUAL') {
-        // Kirim command ke ESP32
         sendControl('misting', value).then(result => {
+            console.log('[Misting] Send result:', result);
             if (!result || !result.success) {
-                // Jika gagal, revert ke state dari MQTT
+                // Revert ke state MQTT
                 updateControlUI(AppState.actuator);
             }
         });
     } else {
-        // AUTO mode: toggle tidak aktif
+        // AUTO: revert
         const currentVal = AppState.actuator.misting || 0;
         const isOn = currentVal > 0;
         DOM.ctrlMistToggle.checked = isOn;
@@ -156,24 +158,25 @@ DOM.ctrlMistToggle?.addEventListener('change', (e) => {
 });
 
 // ============================================================
-// 4. WATER PUMP TOGGLE
+// WATER PUMP TOGGLE (dengan debug)
 // ============================================================
 DOM.ctrlPumpToggle?.addEventListener('change', (e) => {
     const on = e.target.checked;
     const value = on ? 1 : 0;
 
-    // Optimistic update
+    console.log(`[Pump] Toggle changed: ${on}, value: ${value}, mode: ${AppState.system.mode}`);
+
     DOM.ctrlPumpVal.textContent = on ? 'ON' : 'OFF';
     if (DOM.ctrlPumpStatus) DOM.ctrlPumpStatus.textContent = on ? 'ON' : 'OFF';
 
     if (AppState.system.mode === 'MANUAL') {
         sendControl('pump', value).then(result => {
+            console.log('[Pump] Send result:', result);
             if (!result || !result.success) {
                 updateControlUI(AppState.actuator);
             }
         });
     } else {
-        // AUTO mode: toggle tidak aktif
         const isOn = AppState.actuator.water_pump === 1;
         DOM.ctrlPumpToggle.checked = isOn;
         DOM.ctrlPumpVal.textContent = isOn ? 'ON' : 'OFF';
