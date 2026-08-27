@@ -290,8 +290,11 @@ html:not(.dark) #page-settings .bg-slate-50 {
 }
 
 /* ============================================================
-   BADGE STATUS - TEKS PUTIH DI MODE TERANG
+   PERBAIKAN BADGE - MODE TERANG (TEKS JELAS)
    ============================================================ */
+
+/* --- Semua badge di mode terang --- */
+html:not(.dark) .badge,
 html:not(.dark) .badge-normal,
 html:not(.dark) .badge-warning,
 html:not(.dark) .badge-critical,
@@ -302,4 +305,46 @@ html:not(.dark) .badge-offline,
 html:not(.dark) .badge-auto,
 html:not(.dark) .badge-manual {
     color: #ffffff !important;
+    font-weight: 700 !important;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.2) !important;
+}
+
+/* --- Khusus untuk badge AUTO/MANUAL di header --- */
+html:not(.dark) #modeBadge {
+    color: #ffffff !important;
+    font-weight: 700 !important;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.2) !important;
+}
+
+/* --- Pastikan teks di badge status card (Temp, Hum, dll) juga jelas --- */
+html:not(.dark) .card .badge {
+    color: #ffffff !important;
+    font-weight: 700 !important;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.2) !important;
+}
+
+/* --- Untuk badge yang memiliki background terang (misal badge-normal) kita paksa putih --- */
+html:not(.dark) .badge-normal,
+html:not(.dark) .badge-on,
+html:not(.dark) .badge-online {
+    color: #ffffff !important;
+    background-color: #22c55e !important; /* hijau solid */
+}
+
+html:not(.dark) .badge-warning,
+html:not(.dark) .badge-manual {
+    color: #ffffff !important;
+    background-color: #eab308 !important; /* kuning solid */
+}
+
+html:not(.dark) .badge-critical,
+html:not(.dark) .badge-off,
+html:not(.dark) .badge-offline {
+    color: #ffffff !important;
+    background-color: #ef4444 !important; /* merah solid */
+}
+
+html:not(.dark) .badge-auto {
+    color: #ffffff !important;
+    background-color: #1028c7 !important;
 }
