@@ -1,5 +1,5 @@
 /* ============================================================
-   SMART GREENHOUSE DASHBOARD - STYLE FINAL (VERSI 3.0)
+   SMART GREENHOUSE DASHBOARD - STYLE FINAL
    ============================================================ */
 
 /* ============================================================
@@ -62,7 +62,7 @@ body {
 }
 
 /* ============================================================
-   BADGES
+   BADGES (DEFINISI DASAR - DIOVERRIDE UNTUK MODE TERANG)
    ============================================================ */
 .badge {
     padding: 4px 14px;
@@ -73,16 +73,7 @@ body {
     letter-spacing: 0.03em;
 }
 
-.badge-online { background: #dcfce7; color: #166534; }
-.badge-offline { background: #fee2e2; color: #991b1b; }
-.badge-auto { background: #dbeafe; color: #1e40af; }
-.badge-manual { background: #fef3c7; color: #92400e; }
-.badge-normal { background: #dcfce7; color: #166534; }
-.badge-warning { background: #fef3c7; color: #92400e; }
-.badge-critical { background: #fee2e2; color: #991b1b; }
-.badge-on { background: #dcfce7; color: #166534; }
-.badge-off { background: #fee2e2; color: #991b1b; }
-
+/* --- Dark mode badges --- */
 .dark .badge-online { background: #166534; color: #dcfce7; }
 .dark .badge-offline { background: #991b1b; color: #fee2e2; }
 .dark .badge-auto { background: #1e40af; color: #dbeafe; }
@@ -282,18 +273,10 @@ html:not(.dark) #page-settings .bg-slate-50 {
 }
 
 /* ============================================================
-   RESPONSIVE
-   ============================================================ */
-@media (max-width: 640px) {
-    .card { padding: 16px; }
-    .stat-value { font-size: 1.5rem; }
-}
-
-/* ============================================================
-   PERBAIKAN BADGE - MODE TERANG (TEKS JELAS)
+   PERBAIKAN KHUSUS BADGE - MODE TERANG (TEKS PUTIH)
    ============================================================ */
 
-/* --- Semua badge di mode terang --- */
+/* --- Semua badge di mode terang: teks PUTIH, background SOLID --- */
 html:not(.dark) .badge,
 html:not(.dark) .badge-normal,
 html:not(.dark) .badge-warning,
@@ -306,45 +289,132 @@ html:not(.dark) .badge-auto,
 html:not(.dark) .badge-manual {
     color: #ffffff !important;
     font-weight: 700 !important;
-    text-shadow: 0 1px 2px rgba(0,0,0,0.2) !important;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.25) !important;
 }
 
-/* --- Khusus untuk badge AUTO/MANUAL di header --- */
-html:not(.dark) #modeBadge {
-    color: #ffffff !important;
-    font-weight: 700 !important;
-    text-shadow: 0 1px 2px rgba(0,0,0,0.2) !important;
-}
-
-/* --- Pastikan teks di badge status card (Temp, Hum, dll) juga jelas --- */
-html:not(.dark) .card .badge {
-    color: #ffffff !important;
-    font-weight: 700 !important;
-    text-shadow: 0 1px 2px rgba(0,0,0,0.2) !important;
-}
-
-/* --- Untuk badge yang memiliki background terang (misal badge-normal) kita paksa putih --- */
+/* --- Badge Normal / ON / Online → Hijau solid --- */
 html:not(.dark) .badge-normal,
 html:not(.dark) .badge-on,
 html:not(.dark) .badge-online {
+    background-color: #22c55e !important;
+}
+
+/* --- Badge Warning / Manual → Kuning solid --- */
+html:not(.dark) .badge-warning,
+html:not(.dark) .badge-manual {
+    background-color: #eab308 !important;
+}
+
+/* --- Badge Critical / OFF / Offline → Merah solid --- */
+html:not(.dark) .badge-critical,
+html:not(.dark) .badge-off,
+html:not(.dark) .badge-offline {
+    background-color: #ef4444 !important;
+}
+
+/* --- Badge Auto → Biru solid --- */
+html:not(.dark) .badge-auto {
+    background-color: #2563eb !important;
+}
+
+/* --- Khusus badge mode di header (#modeBadge) --- */
+html:not(.dark) #modeBadge {
     color: #ffffff !important;
-    background-color: #22c55e !important; /* hijau solid */
+    font-weight: 700 !important;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.25) !important;
+}
+html:not(.dark) #modeBadge.badge-auto {
+    background-color: #2563eb !important;
+}
+html:not(.dark) #modeBadge.badge-manual {
+    background-color: #eab308 !important;
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 640px) {
+    .card { padding: 16px; }
+    .stat-value { font-size: 1.5rem; }
+}
+
+/* ============================================================
+   PERBAIKAN BADGE - TEKS PUTIH DI MODE TERANG (PASTI)
+   ============================================================ */
+
+/* === SEMUA BADGE DI MODE TERANG: TEKS PUTIH === */
+html:not(.dark) .badge,
+html:not(.dark) .badge-normal,
+html:not(.dark) .badge-warning,
+html:not(.dark) .badge-critical,
+html:not(.dark) .badge-on,
+html:not(.dark) .badge-off,
+html:not(.dark) .badge-online,
+html:not(.dark) .badge-offline,
+html:not(.dark) .badge-auto,
+html:not(.dark) .badge-manual,
+html:not(.dark) [class*="badge-"] {
+    color: #ffffff !important;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.35) !important;
+}
+
+/* === BACKGROUND SOLID UNTUK SETIAP JENIS BADGE === */
+html:not(.dark) .badge-normal,
+html:not(.dark) .badge-on,
+html:not(.dark) .badge-online {
+    background-color: #22c55e !important; /* hijau */
 }
 
 html:not(.dark) .badge-warning,
 html:not(.dark) .badge-manual {
-    color: #ffffff !important;
-    background-color: #eab308 !important; /* kuning solid */
+    background-color: #eab308 !important; /* kuning */
 }
 
 html:not(.dark) .badge-critical,
 html:not(.dark) .badge-off,
 html:not(.dark) .badge-offline {
-    color: #ffffff !important;
-    background-color: #ef4444 !important; /* merah solid */
+    background-color: #ef4444 !important; /* merah */
 }
 
 html:not(.dark) .badge-auto {
+    background-color: #2563eb !important; /* biru */
+}
+
+/* === KHUSUS #modeBadge DI HEADER === */
+html:not(.dark) #modeBadge {
     color: #ffffff !important;
-    background-color: #1028c7 !important;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.35) !important;
+}
+html:not(.dark) #modeBadge.badge-auto {
+    background-color: #2563eb !important;
+}
+html:not(.dark) #modeBadge.badge-manual {
+    background-color: #eab308 !important;
+}
+
+/* === KHUSUS BADGE DI SENSOR CARDS (Temp, Humidity, Light, Soil) === */
+html:not(.dark) #tempStatus,
+html:not(.dark) #humStatus,
+html:not(.dark) #luxStatus,
+html:not(.dark) #soilStatus {
+    color: #ffffff !important;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.35) !important;
+}
+html:not(.dark) #tempStatus.badge-normal,
+html:not(.dark) #humStatus.badge-normal,
+html:not(.dark) #luxStatus.badge-normal,
+html:not(.dark) #soilStatus.badge-normal {
+    background-color: #22c55e !important;
+}
+html:not(.dark) #tempStatus.badge-warning,
+html:not(.dark) #humStatus.badge-warning,
+html:not(.dark) #luxStatus.badge-warning,
+html:not(.dark) #soilStatus.badge-warning {
+    background-color: #eab308 !important;
+}
+html:not(.dark) #tempStatus.badge-critical,
+html:not(.dark) #humStatus.badge-critical,
+html:not(.dark) #luxStatus.badge-critical,
+html:not(.dark) #soilStatus.badge-critical {
+    background-color: #ef4444 !important;
 }
