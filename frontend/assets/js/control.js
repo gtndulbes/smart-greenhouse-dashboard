@@ -14,15 +14,15 @@ async function sendControl(actuator, value) {
         });
         const result = await res.json();
         if (!result.success) {
-            console.warn('Control rejected:', result.error);
+            console.warn('[Control] Rejected:', result.error);
             // Revert ke state terakhir dari MQTT
             updateControlUI(AppState.actuator);
         } else {
-            console.log(`✅ Control sent: ${actuator} = ${value}`);
+            console.log(`[Control] ✅ Sent: ${actuator} = ${value}`);
         }
         return result;
     } catch (e) {
-        console.error('Control error:', e);
+        console.error('[Control] Error:', e);
         // Revert ke state terakhir
         updateControlUI(AppState.actuator);
     }
@@ -32,7 +32,15 @@ async function sendControl(actuator, value) {
 // UPDATE UI DARI MQTT DATA
 // ============================================================
 function updateControlUI(data) {
-    // Fan & LED (PWM)
+    // Validasi data
+    if (!data || typeof data !== 'object') {
+        console.warn('[Control] Invalid data:', data);
+        return;
+    }
+
+    console.log('[Control] Updating UI:', data);
+
+    // --- Fan & LED (PWM) ---
     if (data.fan !== undefined) {
         DOM.ctrlFanVal.textContent = data.fan + '%';
         DOM.ctrlFanSlider.value = data.fan;
@@ -42,20 +50,32 @@ function updateControlUI(data) {
         DOM.ctrlLedSlider.value = data.led;
     }
 
-    // Misting (ON/OFF + Persen)
+    // --- Misting (ON/OFF + Persen) ---
     if (data.misting !== undefined) {
         const val = data.misting;
         const on = val > 0;
+        
+        // Teks besar ON/OFF
         DOM.ctrlMistVal.textContent = on ? 'ON' : 'OFF';
+        
+        // Toggle checkbox
         if (DOM.ctrlMistToggle) DOM.ctrlMistToggle.checked = on;
+        
+        // ===== PERBAIKAN: Update persen output =====
         if (DOM.ctrlMistPercent) DOM.ctrlMistPercent.textContent = val + '%';
     }
 
-    // Water Pump (ON/OFF)
+    // --- Water Pump (ON/OFF) ---
     if (data.water_pump !== undefined) {
         const on = data.water_pump === 1 || data.water_pump === true;
+        
+        // Teks besar ON/OFF
         DOM.ctrlPumpVal.textContent = on ? 'ON' : 'OFF';
+        
+        // Toggle checkbox
         if (DOM.ctrlPumpToggle) DOM.ctrlPumpToggle.checked = on;
+        
+        // ===== PERBAIKAN: Update status di bawah =====
         if (DOM.ctrlPumpStatus) DOM.ctrlPumpStatus.textContent = on ? 'ON' : 'OFF';
     }
 
@@ -91,9 +111,7 @@ function getMode() {
 }
 
 // ============================================================
-// ============================================================
 // EVENT LISTENERS
-// ============================================================
 // ============================================================
 
 // ============================================================
@@ -126,28 +144,30 @@ DOM.ctrlLedSlider?.addEventListener('input', (e) => {
 });
 
 // ============================================================
-// MISTING TOGGLE (dengan debug)
+// 3. MISTING TOGGLE (Manual Control)
 // ============================================================
 DOM.ctrlMistToggle?.addEventListener('change', (e) => {
     const on = e.target.checked;
     const value = on ? 100 : 0;
 
-    console.log(`[Misting] Toggle changed: ${on}, value: ${value}, mode: ${AppState.system.mode}`);
+    console.log(`[Misting] Toggle: ${on}, value: ${value}, mode: ${AppState.system.mode}`);
 
-    // Optimistic update
+    // Optimistic update (UI langsung berubah)
     DOM.ctrlMistVal.textContent = on ? 'ON' : 'OFF';
     if (DOM.ctrlMistPercent) DOM.ctrlMistPercent.textContent = value + '%';
 
     if (AppState.system.mode === 'MANUAL') {
         sendControl('misting', value).then(result => {
-            console.log('[Misting] Send result:', result);
+            console.log('[Misting] Result:', result);
             if (!result || !result.success) {
-                // Revert ke state MQTT
+                // Jika gagal, revert ke state MQTT
                 updateControlUI(AppState.actuator);
             }
+            // Jika berhasil, tunggu ESP32 kirim status balik via MQTT
+            // Status akan update otomatis lewat socket.on('actuatorData')
         });
     } else {
-        // AUTO: revert
+        // AUTO mode: revert ke state ESP32
         const currentVal = AppState.actuator.misting || 0;
         const isOn = currentVal > 0;
         DOM.ctrlMistToggle.checked = isOn;
@@ -158,25 +178,27 @@ DOM.ctrlMistToggle?.addEventListener('change', (e) => {
 });
 
 // ============================================================
-// WATER PUMP TOGGLE (dengan debug)
+// 4. WATER PUMP TOGGLE (Manual Control)
 // ============================================================
 DOM.ctrlPumpToggle?.addEventListener('change', (e) => {
     const on = e.target.checked;
     const value = on ? 1 : 0;
 
-    console.log(`[Pump] Toggle changed: ${on}, value: ${value}, mode: ${AppState.system.mode}`);
+    console.log(`[Pump] Toggle: ${on}, value: ${value}, mode: ${AppState.system.mode}`);
 
+    // Optimistic update
     DOM.ctrlPumpVal.textContent = on ? 'ON' : 'OFF';
     if (DOM.ctrlPumpStatus) DOM.ctrlPumpStatus.textContent = on ? 'ON' : 'OFF';
 
     if (AppState.system.mode === 'MANUAL') {
         sendControl('pump', value).then(result => {
-            console.log('[Pump] Send result:', result);
+            console.log('[Pump] Result:', result);
             if (!result || !result.success) {
                 updateControlUI(AppState.actuator);
             }
         });
     } else {
+        // AUTO mode: revert
         const isOn = AppState.actuator.water_pump === 1;
         DOM.ctrlPumpToggle.checked = isOn;
         DOM.ctrlPumpVal.textContent = isOn ? 'ON' : 'OFF';
@@ -186,7 +208,7 @@ DOM.ctrlPumpToggle?.addEventListener('change', (e) => {
 });
 
 // ============================================================
-// 5. MODE TOGGLE
+// 5. MODE TOGGLE (AUTO / MANUAL)
 // ============================================================
 DOM.ctrlModeToggle?.addEventListener('click', async () => {
     const current = AppState.system.mode || 'AUTO';
@@ -219,7 +241,7 @@ DOM.ctrlModeToggle?.addEventListener('click', async () => {
 });
 
 // ============================================================
-// 6. EXPOSE FUNGSI KE GLOBAL (untuk dipanggil dari file lain)
+// 6. EXPOSE FUNGSI KE GLOBAL
 // ============================================================
 window.sendControl = sendControl;
 window.updateControlUI = updateControlUI;
