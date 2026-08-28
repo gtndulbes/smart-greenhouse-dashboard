@@ -105,10 +105,57 @@ function updateSensorUI(data) {
     DOM.soilTimestamp.textContent = ts;
 }
 
+// ============================================================
+// UPDATE ACTUATOR UI (Dashboard Cards)
+// ============================================================
 function updateActuatorUI(data) {
-    // Update dashboard actuator cards (di dashboard ada di bagian quick status)
-    // Kita update lewat quick status
+    // --- Update Quick Status (selalu) ---
     updateQuickStatus();
+
+    // --- Update Card Misting di Dashboard (jika ada elemen) ---
+    if (data.misting !== undefined) {
+        const mistingElement = document.getElementById('mistingValue');
+        const mistingStatusElement = document.getElementById('mistingStatus');
+        if (mistingElement && mistingStatusElement) {
+            const on = data.misting > 0;
+            const mode = AppState.system.mode || 'AUTO';
+            
+            // Status ON/OFF
+            mistingStatusElement.textContent = on ? 'ON' : 'OFF';
+            mistingStatusElement.className = `badge ${on ? 'badge-on' : 'badge-off'}`;
+            
+            // Nilai persen
+            let percentValue = 0;
+            if (mode === 'AUTO' && data.misting_duty !== undefined) {
+                percentValue = data.misting_duty;
+            } else {
+                percentValue = data.misting;
+            }
+            mistingElement.textContent = on ? 'ON (' + percentValue + '%)' : 'OFF (0%)';
+        }
+    }
+
+    // --- Update Card Water Pump di Dashboard ---
+    if (data.water_pump !== undefined) {
+        const pumpElement = document.getElementById('pumpValue');
+        const pumpStatusElement = document.getElementById('pumpStatus');
+        if (pumpElement && pumpStatusElement) {
+            const on = data.water_pump === 1 || data.water_pump === true;
+            pumpElement.textContent = on ? 'ON' : 'OFF';
+            pumpStatusElement.textContent = on ? 'ON' : 'OFF';
+            pumpStatusElement.className = `badge ${on ? 'badge-on' : 'badge-off'}`;
+        }
+    }
+
+    // --- Update Fan & LED jika ada elemen ---
+    if (data.fan !== undefined) {
+        const fanElement = document.getElementById('fanValue');
+        if (fanElement) fanElement.textContent = data.fan + '%';
+    }
+    if (data.led !== undefined) {
+        const ledElement = document.getElementById('ledValue');
+        if (ledElement) ledElement.textContent = data.led + '%';
+    }
 }
 
 function updateSystemUI(data) {
@@ -119,14 +166,28 @@ function updateSystemUI(data) {
     updateQuickStatus();
 }
 
+// ============================================================
+// QUICK STATUS (System Status Panel)
+// ============================================================
 function updateQuickStatus() {
     if (!DOM.quickStatus) return;
     const { system, actuator, sensor } = AppState;
+    const mode = system.mode || 'AUTO';
+
+    // Tentukan nilai misting yang ditampilkan
+    let mistingDisplay = actuator.misting || 0;
+    let mistingPercent = 0;
+    if (mode === 'AUTO' && actuator.misting_duty !== undefined) {
+        mistingPercent = actuator.misting_duty;
+    } else {
+        mistingPercent = actuator.misting || 0;
+    }
+
     DOM.quickStatus.innerHTML = `
-        <div class="flex justify-between"><span>Mode</span><span class="font-semibold">${system.mode || 'AUTO'}</span></div>
+        <div class="flex justify-between"><span>Mode</span><span class="font-semibold">${mode}</span></div>
         <div class="flex justify-between"><span>Fan</span><span class="font-semibold">${actuator.fan || 0}%</span></div>
         <div class="flex justify-between"><span>LED</span><span class="font-semibold">${actuator.led || 0}%</span></div>
-        <div class="flex justify-between"><span>Misting</span><span class="font-semibold">${actuator.misting || 0}%</span></div>
+        <div class="flex justify-between"><span>Misting</span><span class="font-semibold">${mistingDisplay > 0 ? 'ON' : 'OFF'} (${mistingPercent}%)</span></div>
         <div class="flex justify-between"><span>Pump</span><span class="font-semibold">${actuator.water_pump ? 'ON' : 'OFF'}</span></div>
         <div class="flex justify-between"><span>Temp</span><span class="font-semibold">${sensor.temperature?.toFixed(1) || '--'}°C</span></div>
         <div class="flex justify-between"><span>Hum</span><span class="font-semibold">${sensor.humidity?.toFixed(1) || '--'}%</span></div>
@@ -145,9 +206,7 @@ function updateLastSeen() {
 }
 
 function updateConnectionUI() {
-    const online = AppState.esp32Online;
-    // We don't have dedicated indicators in this layout, but we use sidebar status and last seen.
-    // We'll just rely on lastUpdateText and system status.
+    // Tidak perlu implementasi khusus, status sudah di-update melalui lastUpdateText
 }
 
 // ============================================================

@@ -50,19 +50,24 @@ function updateControlUI(data) {
         DOM.ctrlLedSlider.value = data.led;
     }
 
-    // --- Misting (ON/OFF + Persen) ---
+    // Misting
     if (data.misting !== undefined) {
         const val = data.misting;
         const on = val > 0;
-        
-        // Teks besar ON/OFF
         DOM.ctrlMistVal.textContent = on ? 'ON' : 'OFF';
-        
-        // Toggle checkbox
         if (DOM.ctrlMistToggle) DOM.ctrlMistToggle.checked = on;
-        
-        // ===== PERBAIKAN: Update persen output =====
-        if (DOM.ctrlMistPercent) DOM.ctrlMistPercent.textContent = val + '%';
+
+        // ===== PERBAIKAN: Tampilkan persen sesuai mode =====
+        const mode = AppState.system.mode || 'AUTO';
+        let percentValue = 0;
+        if (mode === 'AUTO' && data.misting_duty !== undefined) {
+            // AUTO: tampilkan duty dari fuzzy
+            percentValue = data.misting_duty;
+        } else {
+            // MANUAL: tampilkan 0 atau 100
+            percentValue = val;
+        }
+        if (DOM.ctrlMistPercent) DOM.ctrlMistPercent.textContent = percentValue + '%';
     }
 
     // --- Water Pump (ON/OFF) ---

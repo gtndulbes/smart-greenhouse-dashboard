@@ -3,7 +3,7 @@
 // ============================================================
 const AppState = {
     sensor: { temperature: null, humidity: null, lux: null, soil_moisture: null },
-    actuator: { fan: 0, led: 0, misting: 0, water_pump: 0 },
+    actuator: { fan: 0, led: 0, misting: 0, water_pump: 0, misting_duty: 0 },
     system: { wifi: false, mqtt: false, sht31: false, bh1750: false, soil: false, mode: 'AUTO' },
     mqttConnected: false,
     esp32Online: false,
