@@ -19,25 +19,95 @@ const AppState = {
 // DOM REFS (Agar konsisten)
 // ============================================================
 const $ = (id) => document.getElementById(id);
+
 const DOM = {
-    // Dashboard
-    tempValue: $('tempValue'), humValue: $('humValue'), luxValue: $('luxValue'), soilValue: $('soilValue'),
-    tempStatus: $('tempStatus'), humStatus: $('humStatus'), luxStatus: $('luxStatus'), soilStatus: $('soilStatus'),
-    tempTimestamp: $('tempTimestamp'), humTimestamp: $('humTimestamp'), luxTimestamp: $('luxTimestamp'), soilTimestamp: $('soilTimestamp'),
-    modeBadge: $('modeBadge'), lastUpdateText: $('lastUpdateText'),
-    alertContainer: $('alertContainer'), chartUpdate: $('chartUpdate'),
-    envChart: $('envChart'), quickStatus: $('quickStatus'),
-    // Control
-    ctrlFanVal: $('ctrlFanVal'), ctrlLedVal: $('ctrlLedVal'), ctrlMistVal: $('ctrlMistVal'), ctrlPumpVal: $('ctrlPumpVal'),
-    ctrlFanSlider: $('ctrlFanSlider'), ctrlLedSlider: $('ctrlLedSlider'), ctrlMistSlider: $('ctrlMistSlider'),
-    ctrlPumpToggle: $('ctrlPumpToggle'), ctrlModeDisplay: $('ctrlModeDisplay'), ctrlModeHint: $('ctrlModeHint'), ctrlModeToggle: $('ctrlModeToggle'),
-    // History
-    historyFrom: $('historyFrom'), historyTo: $('historyTo'), historyLoadBtn: $('historyLoadBtn'), historyExportBtn: $('historyExportBtn'), historyTableBody: $('historyTableBody'),
-    // Alerts
-    allAlertsContainer: $('allAlertsContainer'), clearAlertsBtn: $('clearAlertsBtn'),
-    // Settings
-    setMode: $('setMode'), setBroker: $('setBroker'), setClient: $('setClient'), setLastUpdate: $('setLastUpdate'), setClients: $('setClients'),
-    // System
-    darkModeToggle: $('darkModeToggle'), menuToggle: $('menuToggle'), sidebarOverlay: $('sidebarOverlay'), sidebarClientCount: $('sidebarClientCount'),
+    // ============================================================
+    // DASHBOARD
+    // ============================================================
+    tempValue: $('tempValue'),
+    humValue: $('humValue'),
+    luxValue: $('luxValue'),
+    soilValue: $('soilValue'),
+    tempStatus: $('tempStatus'),
+    humStatus: $('humStatus'),
+    luxStatus: $('luxStatus'),
+    soilStatus: $('soilStatus'),
+    tempTimestamp: $('tempTimestamp'),
+    humTimestamp: $('humTimestamp'),
+    luxTimestamp: $('luxTimestamp'),
+    soilTimestamp: $('soilTimestamp'),
+    modeBadge: $('modeBadge'),
+    lastUpdateText: $('lastUpdateText'),
+    alertContainer: $('alertContainer'),
+    chartUpdate: $('chartUpdate'),
+    envChart: $('envChart'),
+    quickStatus: $('quickStatus'),
+
+    // ============================================================
+    // CONTROL (semua elemen yang dibutuhkan)
+    // ============================================================
+    // Fan & LED (slider)
+    ctrlFanVal: $('ctrlFanVal'),
+    ctrlLedVal: $('ctrlLedVal'),
+    ctrlFanSlider: $('ctrlFanSlider'),
+    ctrlLedSlider: $('ctrlLedSlider'),
+
+    // Misting (toggle + status + output persen)
+    ctrlMistVal: $('ctrlMistVal'),
+    ctrlMistToggle: $('ctrlMistToggle'),    // <-- DITAMBAHKAN
+    ctrlMistPercent: $('ctrlMistPercent'),  // <-- DITAMBAHKAN
+
+    // Water Pump (toggle + status)
+    ctrlPumpVal: $('ctrlPumpVal'),
+    ctrlPumpToggle: $('ctrlPumpToggle'),
+    ctrlPumpStatus: $('ctrlPumpStatus'),    // <-- DITAMBAHKAN
+
+    // Mode
+    ctrlModeDisplay: $('ctrlModeDisplay'),
+    ctrlModeHint: $('ctrlModeHint'),
+    ctrlModeToggle: $('ctrlModeToggle'),
+
+    // ============================================================
+    // HISTORY
+    // ============================================================
+    historyFrom: $('historyFrom'),
+    historyTo: $('historyTo'),
+    historyLoadBtn: $('historyLoadBtn'),
+    historyExportBtn: $('historyExportBtn'),
+    historyTableBody: $('historyTableBody'),
+
+    // ============================================================
+    // ALERTS
+    // ============================================================
+    allAlertsContainer: $('allAlertsContainer'),
+    clearAlertsBtn: $('clearAlertsBtn'),
+
+    // ============================================================
+    // SETTINGS
+    // ============================================================
+    setMode: $('setMode'),
+    setBroker: $('setBroker'),
+    setClient: $('setClient'),
+    setLastUpdate: $('setLastUpdate'),
+    setClients: $('setClients'),
+
+    // ============================================================
+    // SYSTEM
+    // ============================================================
+    darkModeToggle: $('darkModeToggle'),
+    menuToggle: $('menuToggle'),
+    sidebarOverlay: $('sidebarOverlay'),
+    sidebarClientCount: $('sidebarClientCount'),
     pageTitle: $('pageTitle')
 };
+
+// ============================================================
+// DEBUG: Cek elemen penting saat load
+// ============================================================
+console.log('[State] DOM elements loaded:');
+console.log('  ctrlMistToggle:', DOM.ctrlMistToggle ? '✅ Found' : '❌ NOT FOUND');
+console.log('  ctrlMistPercent:', DOM.ctrlMistPercent ? '✅ Found' : '❌ NOT FOUND');
+console.log('  ctrlPumpToggle:', DOM.ctrlPumpToggle ? '✅ Found' : '❌ NOT FOUND');
+console.log('  ctrlPumpStatus:', DOM.ctrlPumpStatus ? '✅ Found' : '❌ NOT FOUND');
+
+console.log('✅ State.js loaded');
