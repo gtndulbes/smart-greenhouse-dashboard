@@ -32,15 +32,9 @@ async function sendControl(actuator, value) {
 // UPDATE UI DARI MQTT DATA
 // ============================================================
 function updateControlUI(data) {
-    // Validasi data
-    if (!data || typeof data !== 'object') {
-        console.warn('[Control] Invalid data:', data);
-        return;
-    }
+    if (!data || typeof data !== 'object') return;
 
-    console.log('[Control] Updating UI:', data);
-
-    // --- Fan & LED (PWM) ---
+    // Fan & LED
     if (data.fan !== undefined) {
         DOM.ctrlFanVal.textContent = data.fan + '%';
         DOM.ctrlFanSlider.value = data.fan;
@@ -52,39 +46,31 @@ function updateControlUI(data) {
 
     // Misting
     if (data.misting !== undefined) {
-        const val = data.misting;
-        const on = val > 0;
-        DOM.ctrlMistVal.textContent = on ? 'ON' : 'OFF';
-        if (DOM.ctrlMistToggle) DOM.ctrlMistToggle.checked = on;
-
-        // ===== PERBAIKAN: Tampilkan persen sesuai mode =====
         const mode = AppState.system.mode || 'AUTO';
+        const relayOn = data.misting > 0;
+
+        // Status ON/OFF berdasarkan relay
+        DOM.ctrlMistVal.textContent = relayOn ? 'ON' : 'OFF';
+        if (DOM.ctrlMistToggle) DOM.ctrlMistToggle.checked = relayOn;
+
+        // Persen: di AUTO tampilkan duty fuzzy, di MANUAL tampilkan 0/100
         let percentValue = 0;
         if (mode === 'AUTO' && data.misting_duty !== undefined) {
-            // AUTO: tampilkan duty dari fuzzy
             percentValue = data.misting_duty;
         } else {
-            // MANUAL: tampilkan 0 atau 100
-            percentValue = val;
+            percentValue = data.misting;
         }
-        if (DOM.ctrlMistPercent) DOM.ctrlMistPercent.textContent = percentValue + '%';
+        if (DOM.ctrlMistPercent) DOM.ctrlMistPercent.textContent = percentValue.toFixed(0) + '%';
     }
 
-    // --- Water Pump (ON/OFF) ---
+    // Water Pump
     if (data.water_pump !== undefined) {
         const on = data.water_pump === 1 || data.water_pump === true;
-        
-        // Teks besar ON/OFF
         DOM.ctrlPumpVal.textContent = on ? 'ON' : 'OFF';
-        
-        // Toggle checkbox
         if (DOM.ctrlPumpToggle) DOM.ctrlPumpToggle.checked = on;
-        
-        // ===== PERBAIKAN: Update status di bawah =====
         if (DOM.ctrlPumpStatus) DOM.ctrlPumpStatus.textContent = on ? 'ON' : 'OFF';
     }
 
-    // Update mode display
     updateControlModeUI(AppState.system);
 }
 

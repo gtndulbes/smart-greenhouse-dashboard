@@ -174,20 +174,23 @@ function updateQuickStatus() {
     const { system, actuator, sensor } = AppState;
     const mode = system.mode || 'AUTO';
 
-    // Tentukan nilai misting yang ditampilkan
-    let mistingDisplay = actuator.misting || 0;
+    // Misting: tampilkan ON/OFF + persen fuzzy
+    const mistingOn = actuator.misting > 0;
     let mistingPercent = 0;
     if (mode === 'AUTO' && actuator.misting_duty !== undefined) {
         mistingPercent = actuator.misting_duty;
     } else {
-        mistingPercent = actuator.misting || 0;
+        mistingPercent = actuator.misting;
     }
 
     DOM.quickStatus.innerHTML = `
         <div class="flex justify-between"><span>Mode</span><span class="font-semibold">${mode}</span></div>
         <div class="flex justify-between"><span>Fan</span><span class="font-semibold">${actuator.fan || 0}%</span></div>
         <div class="flex justify-between"><span>LED</span><span class="font-semibold">${actuator.led || 0}%</span></div>
-        <div class="flex justify-between"><span>Misting</span><span class="font-semibold">${mistingDisplay > 0 ? 'ON' : 'OFF'} (${mistingPercent}%)</span></div>
+        <div class="flex justify-between">
+            <span>Misting</span>
+            <span class="font-semibold">${mistingOn ? 'ON' : 'OFF'} (${mistingPercent.toFixed(0)}%)</span>
+        </div>
         <div class="flex justify-between"><span>Pump</span><span class="font-semibold">${actuator.water_pump ? 'ON' : 'OFF'}</span></div>
         <div class="flex justify-between"><span>Temp</span><span class="font-semibold">${sensor.temperature?.toFixed(1) || '--'}°C</span></div>
         <div class="flex justify-between"><span>Hum</span><span class="font-semibold">${sensor.humidity?.toFixed(1) || '--'}%</span></div>
