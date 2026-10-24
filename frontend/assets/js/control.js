@@ -34,7 +34,9 @@ async function sendControl(actuator, value) {
 function updateControlUI(data) {
     if (!data || typeof data !== 'object') return;
 
+    // ============================================================
     // Fan & LED
+    // ============================================================
     if (data.fan !== undefined) {
         DOM.ctrlFanVal.textContent = data.fan + '%';
         DOM.ctrlFanSlider.value = data.fan;
@@ -44,32 +46,34 @@ function updateControlUI(data) {
         DOM.ctrlLedSlider.value = data.led;
     }
 
+    // ============================================================
+    // MISTING
+    // Status ON/OFF: ikut relay (data.misting)
+    // Persen      : AUTO pakai misting_duty, MANUAL pakai misting
+    // ============================================================
     if (data.misting !== undefined) {
         const mode = AppState.system.mode || 'AUTO';
-        const relayOn = data.misting > 0;
+        const relayOn = data.misting > 0;   // ← STATUS IKUT RELAY
 
-        // ============================================================
-        // PERBAIKAN: Status ON jika relay ON ATAU duty > 0 di AUTO
-        // ============================================================
-        let statusOn = relayOn;
-        if (mode === 'AUTO' && data.misting_duty !== undefined && data.misting_duty > 0) {
-            statusOn = true;  // Duty > 0 berarti misting "aktif" (walau relay berkedip)
-        }
+        // Status ON/OFF
+        DOM.ctrlMistVal.textContent = relayOn ? 'ON' : 'OFF';
+        if (DOM.ctrlMistToggle) DOM.ctrlMistToggle.checked = relayOn;
 
-        DOM.ctrlMistVal.textContent = statusOn ? 'ON' : 'OFF';
-        if (DOM.ctrlMistToggle) DOM.ctrlMistToggle.checked = statusOn;
-
-        // Persen: AUTO pakai duty, MANUAL pakai relay
+        // Persen
         let percentValue = 0;
         if (mode === 'AUTO' && data.misting_duty !== undefined) {
-            percentValue = data.misting_duty;
+            percentValue = data.misting_duty;   // duty fuzzy 0-100
         } else {
-            percentValue = data.misting;
+            percentValue = data.misting;        // 0 atau 100
         }
-        if (DOM.ctrlMistPercent) DOM.ctrlMistPercent.textContent = percentValue.toFixed(0) + '%';
+        if (DOM.ctrlMistPercent) {
+            DOM.ctrlMistPercent.textContent = Math.round(percentValue) + '%';
+        }
     }
 
-    // Water Pump
+    // ============================================================
+    // WATER PUMP
+    // ============================================================
     if (data.water_pump !== undefined) {
         const on = data.water_pump === 1 || data.water_pump === true;
         DOM.ctrlPumpVal.textContent = on ? 'ON' : 'OFF';
