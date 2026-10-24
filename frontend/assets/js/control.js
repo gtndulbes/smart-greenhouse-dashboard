@@ -44,16 +44,22 @@ function updateControlUI(data) {
         DOM.ctrlLedSlider.value = data.led;
     }
 
-    // Misting
     if (data.misting !== undefined) {
         const mode = AppState.system.mode || 'AUTO';
         const relayOn = data.misting > 0;
 
-        // Status ON/OFF berdasarkan relay
-        DOM.ctrlMistVal.textContent = relayOn ? 'ON' : 'OFF';
-        if (DOM.ctrlMistToggle) DOM.ctrlMistToggle.checked = relayOn;
+        // ============================================================
+        // PERBAIKAN: Status ON jika relay ON ATAU duty > 0 di AUTO
+        // ============================================================
+        let statusOn = relayOn;
+        if (mode === 'AUTO' && data.misting_duty !== undefined && data.misting_duty > 0) {
+            statusOn = true;  // Duty > 0 berarti misting "aktif" (walau relay berkedip)
+        }
 
-        // Persen: di AUTO tampilkan duty fuzzy, di MANUAL tampilkan 0/100
+        DOM.ctrlMistVal.textContent = statusOn ? 'ON' : 'OFF';
+        if (DOM.ctrlMistToggle) DOM.ctrlMistToggle.checked = statusOn;
+
+        // Persen: AUTO pakai duty, MANUAL pakai relay
         let percentValue = 0;
         if (mode === 'AUTO' && data.misting_duty !== undefined) {
             percentValue = data.misting_duty;

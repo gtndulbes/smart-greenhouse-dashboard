@@ -97,7 +97,6 @@ function updateSensorUI(data) {
         DOM.soilStatus.textContent = txt;
         DOM.soilStatus.className = `text-xs px-2 py-0.5 rounded-full font-medium ${cls}`;
     }
-    // Timestamp
     const ts = new Date().toLocaleTimeString();
     DOM.tempTimestamp.textContent = ts;
     DOM.humTimestamp.textContent = ts;
@@ -109,33 +108,30 @@ function updateSensorUI(data) {
 // UPDATE ACTUATOR UI (Dashboard Cards)
 // ============================================================
 function updateActuatorUI(data) {
-    // --- Update Quick Status (selalu) ---
     updateQuickStatus();
 
-    // --- Update Card Misting di Dashboard (jika ada elemen) ---
+    // --- Card Misting ---
     if (data.misting !== undefined) {
         const mistingElement = document.getElementById('mistingValue');
         const mistingStatusElement = document.getElementById('mistingStatus');
         if (mistingElement && mistingStatusElement) {
             const on = data.misting > 0;
             const mode = AppState.system.mode || 'AUTO';
-            
-            // Status ON/OFF
+
             mistingStatusElement.textContent = on ? 'ON' : 'OFF';
             mistingStatusElement.className = `badge ${on ? 'badge-on' : 'badge-off'}`;
-            
-            // Nilai persen
+
             let percentValue = 0;
             if (mode === 'AUTO' && data.misting_duty !== undefined) {
                 percentValue = data.misting_duty;
             } else {
                 percentValue = data.misting;
             }
-            mistingElement.textContent = on ? 'ON (' + percentValue + '%)' : 'OFF (0%)';
+            mistingElement.textContent = on ? 'ON (' + percentValue + '%)' : 'OFF (' + percentValue + '%)';
         }
     }
 
-    // --- Update Card Water Pump di Dashboard ---
+    // --- Card Water Pump ---
     if (data.water_pump !== undefined) {
         const pumpElement = document.getElementById('pumpValue');
         const pumpStatusElement = document.getElementById('pumpStatus');
@@ -147,7 +143,7 @@ function updateActuatorUI(data) {
         }
     }
 
-    // --- Update Fan & LED jika ada elemen ---
+    // --- Fan & LED ---
     if (data.fan !== undefined) {
         const fanElement = document.getElementById('fanValue');
         if (fanElement) fanElement.textContent = data.fan + '%';
@@ -167,15 +163,18 @@ function updateSystemUI(data) {
 }
 
 // ============================================================
-// QUICK STATUS (System Status Panel)
+// QUICK STATUS (System Status Panel) – DIPERBAIKI
 // ============================================================
 function updateQuickStatus() {
     if (!DOM.quickStatus) return;
     const { system, actuator, sensor } = AppState;
     const mode = system.mode || 'AUTO';
 
-    // Misting: tampilkan ON/OFF + persen fuzzy
-    const mistingOn = actuator.misting > 0;
+    // ============================================================
+    // Misting: status ikut relay, persen ikut duty (di AUTO)
+    // ============================================================
+    const relayOn = actuator.misting > 0;
+
     let mistingPercent = 0;
     if (mode === 'AUTO' && actuator.misting_duty !== undefined) {
         mistingPercent = actuator.misting_duty;
@@ -183,13 +182,17 @@ function updateQuickStatus() {
         mistingPercent = actuator.misting;
     }
 
+    const mistingLabel = relayOn
+        ? `ON (${mistingPercent.toFixed(0)}%)`
+        : `OFF (${mistingPercent.toFixed(0)}%)`;
+
     DOM.quickStatus.innerHTML = `
         <div class="flex justify-between"><span>Mode</span><span class="font-semibold">${mode}</span></div>
         <div class="flex justify-between"><span>Fan</span><span class="font-semibold">${actuator.fan || 0}%</span></div>
         <div class="flex justify-between"><span>LED</span><span class="font-semibold">${actuator.led || 0}%</span></div>
         <div class="flex justify-between">
             <span>Misting</span>
-            <span class="font-semibold">${mistingOn ? 'ON' : 'OFF'} (${mistingPercent.toFixed(0)}%)</span>
+            <span class="font-semibold">${mistingLabel}</span>
         </div>
         <div class="flex justify-between"><span>Pump</span><span class="font-semibold">${actuator.water_pump ? 'ON' : 'OFF'}</span></div>
         <div class="flex justify-between"><span>Temp</span><span class="font-semibold">${sensor.temperature?.toFixed(1) || '--'}°C</span></div>
@@ -209,7 +212,7 @@ function updateLastSeen() {
 }
 
 function updateConnectionUI() {
-    // Tidak perlu implementasi khusus, status sudah di-update melalui lastUpdateText
+    // status sudah di-update melalui lastUpdateText
 }
 
 // ============================================================
@@ -217,7 +220,6 @@ function updateConnectionUI() {
 // ============================================================
 document.addEventListener('DOMContentLoaded', () => {
     initChart();
-    // Set default dates for history
     const now = new Date();
     const from = new Date(now);
     from.setDate(from.getDate() - 7);
